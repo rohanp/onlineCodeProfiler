@@ -1,0 +1,45 @@
+<html>
+<body>
+
+Here is your code: <br>
+
+
+<pre>
+	<?php
+		$fname = "c" . hash("md5", $_POST["code"] . time() . "SALT");
+		
+		chdir("scripts");
+		mkdir($fname);
+		chdir($fname);
+		exec("cp ../../compile.py . ");
+
+		$file = fopen($fname . ".pyx", "w");
+		fwrite($file,  $_POST["code"]);
+		echo $_POST["code"];
+		echo "<br><br><br>";
+
+		$name_file = fopen("filename.txt", "w");
+		fwrite($name_file, $fname . ".pyx");
+		
+		exec("chmod a+x+w+r *");
+		
+		echo shell_exec("python compile.py build_ext --inplace 2>&1");
+			
+		$file = $fname . '.so';	
+		if (file_exists($file)) {
+		    echo "here";
+		    header('Content-Description: File Transfer');
+		    header('Content-Type: application/octet-stream');
+		    header('Content-Disposition: attachment; filename='.basename($file));
+		    header('Expires: 0');
+		    header('Cache-Control: must-revalidate');
+		    header('Pragma: public');
+		    header('Content-Length: ' . filesize($file));
+		    readfile($file);
+		    exit;
+		}
+	?>
+</pre>
+
+</body>
+</html>
